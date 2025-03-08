@@ -1,0 +1,120 @@
+Building Linux Network sniffer using Python
+
+
+OS - Kali Linux
+
+sudo nano networksniffer.py
+
+Python source code for building the sniffer
+basic script of network sniffer.
+Script :- 
+from scapy.all import sniff
+
+# Callback function to process each packet
+def packet_callback(packet):
+    print(packet.summary())
+
+# Sniff network traffic on the specified interface
+def main():
+    # Replace 'eth0' with your network interface
+    interface = 'eth0'
+    print(f"Sniffing on interface {interface}")
+    sniff(iface=interface, prn=packet_callback, store=0)
+
+if __name__ == "__main__":
+    main()
+
+
+
+
+
+
+
+
+To include more detailed packet analysis:
+from scapy.all import sniff, IP, TCP, UDP
+
+# Callback function to process each packet
+def packet_callback(packet):
+    if IP in packet:
+        ip_src = packet[IP].src
+        ip_dst = packet[IP].dst
+        protocol = packet[IP].proto
+        if protocol == 6:  # TCP
+            tcp_src_port = packet[TCP].sport
+            tcp_dst_port = packet[TCP].dport
+            print(f"TCP Packet - Source IP: {ip_src}, Destination IP: {ip_dst}, Source Port: {tcp_src_port}, Destination Port: {tcp_dst_port}")
+        elif protocol == 17:  # UDP
+            udp_src_port = packet[UDP].sport
+            udp_dst_port = packet[UDP].dport
+            print(f"UDP Packet - Source IP: {ip_src}, Destination IP: {ip_dst}, Source Port: {udp_src_port}, Destination Port: {udp_dst_port}")
+        else:
+            print(f"IP Packet - Source IP: {ip_src}, Destination IP: {ip_dst}, Protocol: {protocol}")
+
+# Sniff network traffic on the specified interface
+def main():
+    # Replace 'eth0' with your network interface
+    interface = 'eth0'
+    print(f"Sniffing on interface {interface}")
+    sniff(iface=interface, prn=packet_callback, store=0)
+
+if __name__ == "__main__":
+    main()
+
+
+
+
+
+
+To capture only specific types of traffic, such as HTTP traffic, modify the script to include a filter. Open the script again:
+ 
+
+Script :
+from scapy.all import sniff, IP, TCP
+
+# Callback function to process each packet
+def packet_callback(packet):
+    if TCP in packet and packet[TCP].dport == 80:
+        ip_src = packet[IP].src
+        ip_dst = packet[IP].dst
+        tcp_src_port = packet[TCP].sport
+        tcp_dst_port = packet[TCP].dport
+        print(f"HTTP Packet - Source IP: {ip_src}, Destination IP: {ip_dst}, Source Port: {tcp_src_port}, Destination Port: {tcp_dst_port}")
+
+# Sniff network traffic on the specified interface
+def main():
+    # Replace 'eth0' with your network interface
+    interface = 'eth0'
+    print(f"Sniffing on interface {interface}")
+    sniff(iface=interface, prn=packet_callback, store=0)
+
+if __name__ == "__main__":
+    main()
+
+
+
+
+
+Updated the script to save packets :
+
+from scapy.all import sniff, wrpcap
+
+# Callback function to process each packet
+def packet_callback(packet):
+    # Save the packet to a file
+    wrpcap('captured_packets.pcap', packet)
+
+# Sniff network traffic on the specified interface
+def main():
+    # Replace 'eth0' with your network interface
+    interface = 'eth0'
+    print(f"Sniffing on interface {interface}")
+    sniff(iface=interface, prn=packet_callback, store=0)
+
+if __name__ == "__main__":
+    main()
+
+
+
+
+Give executable permissions after saving for every instances above.
