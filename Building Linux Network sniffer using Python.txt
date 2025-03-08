@@ -1,4 +1,4 @@
-Building Linux Network sniffer using Python
+Building Linux network sniffer using Python
 
 
 OS - Kali Linux
